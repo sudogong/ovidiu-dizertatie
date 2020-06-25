@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ovidiu - Dizertatie</title>
+</head>
+<body>
+    <div class="header-container">
+        <div class="main-title">
+            <h1>Ovidiu's JWT Decoder</h1>
+        </div>
+    </div>
+    <div class="second-title">
+        <h2>powered by andeak</h2>
+    </div>
+    
+    <form id="form" action="parse">
+        <label for="jwt-encoded">JWT Encoded</label> 
+        <textarea id="jwt-encoded" name="jwt">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkrDtGhuIETDs8OoIiwiYWRtaW4iOnRydWV9.469tBeJmYLERjlKi9u6gylb-2NsjHLC_6kZNdtoOGsA</textarea>
+        <label for="jwt-decided">JWT Decoded</label>
+        <textarea id="jwt-decoded" name="out"></textarea>
+        <input type="submit" value="parse" />
+    </form>
+    <script>
+        let b64DecodeUnicode = str => decodeURIComponent(
+    Array.prototype.map.call(atob(str), c =>
+      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join(''))
+
+let parseJwt = token =>
+  JSON.parse(
+    b64DecodeUnicode(
+      token.split('.')[1].replace('-', '+').replace('_', '/')
+    )
+  )
+
+
+let form = document.getElementById("form")
+form.addEventListener("submit", (e) => {
+   form.out.value = JSON.stringify(
+      parseJwt(form.jwt.value)
+   )
+   e.preventDefault();
+})
+    </script>
+</body>
+</html>
