@@ -3,46 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ovidiu - Dizertatie</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <title>Aplicatie Disertatie - Ovidiu Ben</title>
 </head>
 <body>
-    <div class="header-container">
-        <div class="main-title">
-            <h1>Ovidiu's JWT Decoder</h1>
+    <div class="navbar-container">
+        <div class="navbar-container-center">
+            <div class="navbar-logo-container">
+                <div class="navbar-logo">
+                    <ion-icon name="barcode-outline" class="logo"></ion-icon>
+                </div>
+                <div class="header">
+                    <div class="header-title">Aplicatie Disertatie</div>
+                    <div class="header-author">Ovidiu Ben</div>
+                </div>
+            </div>
+            <div class="navbar-links">
+                <div class="navbar-Google">
+                    <i class="navbar-icons"><ion-icon name="logo-google"></ion-icon></i>
+                    <a target="blank" href="https://google.com">Cauta pe Internet</a>
+                </div>
+                <div class="navbar-email">
+                    <i class="navbar-icons"><ion-icon name="mail-outline"></ion-icon></i>
+                    <a target="blank" href="https://signup.microsoft.com/create-account/signup?offerid=B07A1127-DE83-4a6d-9F85-2C104BDAE8B4&dl=ENTERPRISEPACK&ispolaris=1&culture=ro-ro&country=ro&ali=1&products=cfq7ttc0k59j:0009">Creare cont Office 365</a>
+                </div>
+            </div>
+        </div>    
+    </div>
+    <div class="decoder-main-container">
+        <div class="decoder-center-container">
+            <div class="jwt-encoded-container">
+                <div class="jwt-encoded-label">
+                    JSON Web Token - Codat
+                </div>
+                <div>
+                    <textarea id="jwt-input-textarea"></textarea>
+                </div>
+            </div>
+            <div class="jwt-decoded-container">
+                <div class="jwt-decoded-label">
+                    JSON Web Token - Decodat
+                </div>
+                <div class="jwt-decoded-row-container">
+                    <div class="jwt-decoded-header">
+                        <div class="jwt-decoded-header-title">
+                            Header: <span>Algoritm si Tip Token</span>
+                        </div>
+                        <div class="jwt-decoded-header-data">
+                            <pre id='json-header'></pre>
+                        </div>
+                    </div>
+                    <div class="jwt-decoded-payload">
+                        <div class="jwt-decoded-payload-title">
+                            Payload: <span>Data</span>
+                        </div>
+                        <div class="jwt-decoded-payload-data">
+                            <pre id='json-payload'></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="second-title">
-        <h2>powered by andeak</h2>
-    </div>
-    
-    <form id="form" action="parse">
-        <label for="jwt-encoded">JWT Encoded</label> 
-        <textarea id="jwt-encoded" name="jwt">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkrDtGhuIETDs8OoIiwiYWRtaW4iOnRydWV9.469tBeJmYLERjlKi9u6gylb-2NsjHLC_6kZNdtoOGsA</textarea>
-        <label for="jwt-decided">JWT Decoded</label>
-        <textarea id="jwt-decoded" name="out"></textarea>
-        <input type="submit" value="parse" />
-    </form>
+    <script type="module" src="https://unpkg.com/ionicons@5.1.1/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule="" src="https://unpkg.com/ionicons@5.1.1/dist/ionicons/ionicons.js"></script>
     <script>
-        let b64DecodeUnicode = str => decodeURIComponent(
-    Array.prototype.map.call(atob(str), c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''))
+        var tokenEncoded, tokenDecoded, tokenDecodedHeader, tokenDecodedPayload;
+        function parseJwt(token) {
+            try {
+            // Get Token Header
+            const base64HeaderUrl = token.split('.')[0];
+            const base64Header = base64HeaderUrl.replace('-', '+').replace('_', '/');
+            const headerData = JSON.parse(window.atob(base64Header));
 
-let parseJwt = token =>
-  JSON.parse(
-    b64DecodeUnicode(
-      token.split('.')[1].replace('-', '+').replace('_', '/')
-    )
-  )
+            // Get Token payload and date's
+            const base64Url = token.split('.')[1];
+            const base64 = base64Url.replace('-', '+').replace('_', '/');
+            const dataJWT = JSON.parse(window.atob(base64));
+            dataJWT.header = headerData;
+
+        // TODO: add expiration at check ...
 
 
-let form = document.getElementById("form")
-form.addEventListener("submit", (e) => {
-   form.out.value = JSON.stringify(
-      parseJwt(form.jwt.value)
-   )
-   e.preventDefault();
-})
+            return dataJWT;
+        } catch (err) {
+            return false;
+        }
+        }
+
+        document.addEventListener('keyup', token => {
+            tokenEncoded = (document.getElementById('jwt-input-textarea')).value;
+            tokenDecoded = parseJwt(tokenEncoded);
+            tokenDecodedHeader = JSON.stringify((tokenDecoded.header), null, 2);
+            tokenDecodedPayload = tokenDecoded;
+            delete tokenDecodedPayload.header;
+            tokenDecodedPayload = JSON.stringify(tokenDecoded, null, 2);
+            const header = document.querySelector('.jwt-decoded-header-data');
+            const payload = document.querySelector('.jwt-decoded-payload-data');
+            header.innerHTML = tokenDecodedHeader;
+            payload.textContent = tokenDecodedPayload;
+        })
+
+
+
+
     </script>
 </body>
 </html>
+
+
