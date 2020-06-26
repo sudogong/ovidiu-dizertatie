@@ -19,7 +19,7 @@ html {
 
 .navbar-container {
     display: flex;
-    height: 100px;
+    height: 75px;
     background-color: black;
     color: #fff;
     flex-direction: row;
@@ -90,6 +90,7 @@ html {
     flex-direction: row;
     justify-content: space-evenly;
     height: 90vh;
+    width: 100%;
     align-content: center;
 }
 
